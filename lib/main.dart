@@ -53,6 +53,7 @@ class ClipListPage extends StatefulWidget {
 class _ClipListPageState extends State<ClipListPage> {
   var _items = List<Clip>();
   var _clipController = TextEditingController();
+  var _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -87,66 +88,63 @@ class _ClipListPageState extends State<ClipListPage> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            _displayTextInputDialog(context, "");
+            _displayTextInputDialog(context, null);
           }),
     );
   }
 
-  Future<void> _displayTextInputDialog(BuildContext context, String str) async {
+  Future<void> _displayTextInputDialog(BuildContext context, Clip clip) async {
     return showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
-          return AlertDialog(
-            // title: Text('Write here!'),
-            content: TextFormField(
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              decoration: InputDecoration(
-                // border: OutlineInputBorder(),
-                hintText: 'Write here!',
+          return Form(
+            key: _formKey,
+            child: AlertDialog(
+              // title: Text('Write here!'),
+              content: TextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: InputDecoration(
+                  // border: OutlineInputBorder(),
+                  hintText: 'Write here!',
+                ),
+                controller: _clipController
+                  ..text = clip == null ? "" : clip.title,
+                validator: (value) {
+                  if (value.trim().isEmpty) {
+                    return 'Value Can\'t be Empty';
+                  }
+                  return null;
+                },
               ),
-              controller: _clipController..text = str,
-              validator: (value) {
-                if (value.trim().isEmpty) {
-                  return 'Value Can\'t be Empty';
-                }
-                return null;
-              },
+              actions: <Widget>[
+                FlatButton(
+                  // color: Colors.red,
+                  textColor: Colors.black,
+                  child: Text('CANCEL'),
+                  onPressed: () {
+                    _clipController.text = "";
+                    Navigator.pop(context);
+                  },
+                ),
+                FlatButton(
+                  // color: Colors.green,
+                  textColor: Colors.black,
+                  child: Text('OK'),
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      if (clip == null) {
+                        _addClip(Clip(_clipController.text.trimLeft()));
+                      } else {
+                        _editClip(clip, _clipController.text.trimLeft());
+                      }
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
             ),
-
-            //     TextField(
-            //   keyboardType: TextInputType.multiline,
-            //   maxLines: null,
-            //   onChanged: (value) {
-            //     // setState(() {});
-            //   },
-            //   controller: _clipController..text = str,
-            //   decoration: InputDecoration(
-            //     hintText: "Write here!",
-            //     errorText: _validate ? null : 'Value Can\'t be Empty',
-            //   ),
-            // ),
-            actions: <Widget>[
-              FlatButton(
-                // color: Colors.red,
-                textColor: Colors.black,
-                child: Text('CANCEL'),
-                onPressed: () {
-                  _clipController.text = "";
-                  Navigator.pop(context);
-                },
-              ),
-              FlatButton(
-                // color: Colors.green,
-                textColor: Colors.black,
-                child: Text('OK'),
-                onPressed: () {
-                  _addClip(Clip(_clipController.text.trimLeft()));
-                  Navigator.pop(context);
-                },
-              ),
-            ],
           );
         });
   }
@@ -205,7 +203,7 @@ class _ClipListPageState extends State<ClipListPage> {
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
-              _displayTextInputDialog(context, clip.title);
+              _displayTextInputDialog(context, clip);
             },
           ),
           IconButton(
@@ -225,7 +223,16 @@ class _ClipListPageState extends State<ClipListPage> {
       _items.add(clip);
       _clipController.text = "";
       _addStringToSF(Clip.encode(_items));
-      _loadClipsFromSF();
+      // _loadClipsFromSF();
+    });
+  }
+
+  void _editClip(Clip clip, String str) {
+    setState(() {
+      clip.title = str;
+      _clipController.text = "";
+      _addStringToSF(Clip.encode(_items));
+      // _loadClipsFromSF();
     });
   }
 
@@ -233,7 +240,7 @@ class _ClipListPageState extends State<ClipListPage> {
     setState(() {
       _items.remove(clip);
       _addStringToSF(Clip.encode(_items));
-      _loadClipsFromSF();
+      // _loadClipsFromSF();
     });
   }
 
@@ -241,14 +248,15 @@ class _ClipListPageState extends State<ClipListPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _items = (Clip.decode(prefs.getString('clips')));
+      if (_items == null) {
+        _items = List<Clip>();
+      }
       print('items 개수: ${_items.length}');
     });
   }
 
   void _addStringToSF(String encodedItems) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // print('인코딩된 아이템: ${encodedItems}');
     prefs.setString('clips', encodedItems);
-    // print('SF: ${prefs.getString('clips')}');
   }
 }
