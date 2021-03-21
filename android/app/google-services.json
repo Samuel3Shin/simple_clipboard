@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "103198826962",
+    "project_id": "simple-clipboard",
+    "storage_bucket": "simple-clipboard.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103198826962:android:8452207257a3b576a9e80b",
+        "android_client_info": {
+          "package_name": "com.ssmegentle.simple_clipboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "103198826962-okmn84lquqgojb98i5jr1vfaodcvvh3e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqmjMsjfVzCO9H7p7QQcrMokNO5q4I7SE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "103198826962-okmn84lquqgojb98i5jr1vfaodcvvh3e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
