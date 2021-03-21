@@ -101,7 +101,7 @@ class _ClipListPageState extends State<ClipListPage> {
           return Form(
             key: _formKey,
             child: AlertDialog(
-              // title: Text('Write here!'),
+              title: clip == null ? Text('Add') : Text('Edit'),
               content: TextFormField(
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
@@ -156,7 +156,8 @@ class _ClipListPageState extends State<ClipListPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Are you sure?'),
+            title: Text('Delete'),
+            content: Text('${clip.title}'),
             actions: <Widget>[
               FlatButton(
                 // color: Colors.red,
@@ -247,10 +248,13 @@ class _ClipListPageState extends State<ClipListPage> {
   void _loadClipsFromSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _items = (Clip.decode(prefs.getString('clips')));
-      if (_items == null) {
-        _items = List<Clip>();
-      }
+      _items = prefs.getString('clips').isEmpty
+          ? List<Clip>()
+          : Clip.decode(prefs.getString('clips'));
+      // _items = (Clip.decode(prefs.getString('clips')));
+      // if (_items == null) {
+      //   _items = List<Clip>();
+      // }
       print('items 개수: ${_items.length}');
     });
   }
