@@ -5,6 +5,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+// import 'package:firebase_admob/firebase_admob.dart';
+import 'package:simple_clipboard/ad_manager.dart';
+import 'package:firebase_admob/firebase_admob.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -54,16 +58,34 @@ class _ClipListPageState extends State<ClipListPage> {
   var _items = List<Clip>();
   var _clipController = TextEditingController();
   var _formKey = GlobalKey<FormState>();
+  BannerAd _bannerAd;
+
+  void _loadBannerAd() {
+    _bannerAd
+      ..load()
+      ..show(anchorType: AnchorType.bottom);
+  }
+
+  Future<void> _initAdMob() {
+    return FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+  }
 
   @override
   void initState() {
     super.initState();
     _loadClipsFromSF();
+    _bannerAd = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      size: AdSize.banner,
+    );
+
+    _loadBannerAd();
   }
 
   @override
   void dispose() {
     _clipController.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -251,7 +273,7 @@ class _ClipListPageState extends State<ClipListPage> {
   void _loadClipsFromSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _items = prefs.getString('clips').isEmpty
+      _items = prefs.getString('clips') == null
           ? List<Clip>()
           : Clip.decode(prefs.getString('clips'));
       // _items = (Clip.decode(prefs.getString('clips')));
