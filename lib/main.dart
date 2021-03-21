@@ -25,15 +25,10 @@ class Clip {
         clips.map<Map<String, dynamic>>((clip) => Clip.toMap(clip)).toList(),
       );
 
-  static List<Clip> decode(String encodedItems) {
-    if (encodedItems.length > 0) {
+  static List<Clip> decode(String encodedItems) =>
       (json.decode(encodedItems) as List<dynamic>)
           .map<Clip>((item) => Clip.fromJson(item))
           .toList();
-    } else {
-      List<Clip>();
-    }
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -58,7 +53,6 @@ class ClipListPage extends StatefulWidget {
 class _ClipListPageState extends State<ClipListPage> {
   var _items = List<Clip>();
   var _clipController = TextEditingController();
-  bool _validate = true;
 
   @override
   void initState() {
@@ -140,7 +134,6 @@ class _ClipListPageState extends State<ClipListPage> {
                 child: Text('CANCEL'),
                 onPressed: () {
                   _clipController.text = "";
-                  _validate = true;
                   Navigator.pop(context);
                 },
               ),
@@ -149,15 +142,8 @@ class _ClipListPageState extends State<ClipListPage> {
                 textColor: Colors.black,
                 child: Text('OK'),
                 onPressed: () {
-                  setState(() {
-                    _clipController.text.trimLeft().isEmpty
-                        ? _validate = false
-                        : _validate = true;
-                  });
-                  if (_validate) {
-                    _addClip(Clip(_clipController.text.trimLeft()));
-                    Navigator.pop(context);
-                  }
+                  _addClip(Clip(_clipController.text.trimLeft()));
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -239,6 +225,7 @@ class _ClipListPageState extends State<ClipListPage> {
       _items.add(clip);
       _clipController.text = "";
       _addStringToSF(Clip.encode(_items));
+      _loadClipsFromSF();
     });
   }
 
@@ -246,20 +233,22 @@ class _ClipListPageState extends State<ClipListPage> {
     setState(() {
       _items.remove(clip);
       _addStringToSF(Clip.encode(_items));
+      _loadClipsFromSF();
     });
   }
 
   void _loadClipsFromSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      if (prefs.getString('clips') != null) {
-        _items = (Clip.decode(prefs.getString('clips')) ?? List<Clip>());
-      }
+      _items = (Clip.decode(prefs.getString('clips')));
+      print('items 개수: ${_items.length}');
     });
   }
 
   void _addStringToSF(String encodedItems) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // print('인코딩된 아이템: ${encodedItems}');
     prefs.setString('clips', encodedItems);
+    // print('SF: ${prefs.getString('clips')}');
   }
 }
