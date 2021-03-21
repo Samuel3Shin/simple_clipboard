@@ -203,7 +203,7 @@ class _ClipListPageState extends State<ClipListPage> {
         children: <Widget>[
           IconButton(
             iconSize: 16.0,
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.centerRight,
             icon: Icon(Icons.edit),
             onPressed: () {
               _displayTextInputDialog(context, clip);
@@ -211,7 +211,7 @@ class _ClipListPageState extends State<ClipListPage> {
           ),
           IconButton(
             iconSize: 16.0,
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.centerRight,
             icon: Icon(Icons.delete),
             onPressed: () {
               _displayDeleteConfirmDialog(context, clip);
