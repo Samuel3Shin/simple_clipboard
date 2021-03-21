@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.simple_clipboard">
+    package="com.ssmegentle.simple_clipboard">
    <application
         android:label="simple_clipboard"
         android:icon="@mipmap/ic_launcher">
