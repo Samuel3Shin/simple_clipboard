@@ -46,8 +46,7 @@ class MyApp extends StatelessWidget {
         home: ClipListPage(),
         builder: (BuildContext context, Widget widget) {
           return new Padding(
-              child: widget,
-              padding: new EdgeInsets.only(bottom: 60, right: 0.0));
+              child: widget, padding: new EdgeInsets.only(bottom: 60));
         });
   }
 }
