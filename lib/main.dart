@@ -39,12 +39,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-      ),
-      home: ClipListPage(),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.pink,
+        ),
+        home: ClipListPage(),
+        builder: (BuildContext context, Widget widget) {
+          return new Padding(
+              child: widget,
+              padding: new EdgeInsets.only(bottom: 60, right: 0.0));
+        });
   }
 }
 
@@ -96,7 +100,7 @@ class _ClipListPageState extends State<ClipListPage> {
         // ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(bottom: 60.0),
+        padding: const EdgeInsets.only(bottom: 0.0),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -111,7 +115,7 @@ class _ClipListPageState extends State<ClipListPage> {
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
+        padding: const EdgeInsets.only(bottom: 20.0),
         child: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
@@ -119,6 +123,10 @@ class _ClipListPageState extends State<ClipListPage> {
             }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      // bottomNavigationBar: Container(
+      //   height: 100.0,
+      //   // color: Colors.white,
+      // ),
     );
   }
 
@@ -230,25 +238,51 @@ class _ClipListPageState extends State<ClipListPage> {
       ),
       trailing: Wrap(
         children: <Widget>[
-          IconButton(
-            iconSize: 16.0,
-            alignment: Alignment.centerRight,
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              _displayTextInputDialog(context, clip);
+          PopupMenuButton(
+            onSelected: (value) =>
+                _handleListTilePopUpButton(value, context, clip),
+            itemBuilder: (BuildContext context) {
+              return {'Edit', 'Delete'}.map((String choice) {
+                return PopupMenuItem(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
             },
           ),
-          IconButton(
-            iconSize: 16.0,
-            alignment: Alignment.centerRight,
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              _displayDeleteConfirmDialog(context, clip);
-            },
-          ),
+          // IconButton(
+          //   iconSize: 16.0,
+          //   alignment: Alignment.centerRight,
+          //   icon: Icon(Icons.edit),
+          //   onPressed: () {
+          //     _displayTextInputDialog(context, clip);
+          //   },
+          // ),
+          // IconButton(
+          //   iconSize: 16.0,
+          //   alignment: Alignment.centerRight,
+          //   icon: Icon(Icons.delete),
+          //   onPressed: () {
+          //     _displayDeleteConfirmDialog(context, clip);
+          //   },
+          // ),
         ],
       ),
     );
+  }
+
+  void _handleListTilePopUpButton(
+      String value, BuildContext context, Clip clip) {
+    switch (value) {
+      case 'Edit':
+        print('Eidt!');
+        _displayTextInputDialog(context, clip);
+        break;
+      case 'Delete':
+        print('Delete!');
+        _displayDeleteConfirmDialog(context, clip);
+        break;
+    }
   }
 
   void _addClip(Clip clip) {
