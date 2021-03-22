@@ -93,11 +93,6 @@ class _ClipListPageState extends State<ClipListPage> {
     return Scaffold(
       appBar: CupertinoNavigationBar(
         middle: Text('Simple Clipboard'),
-        // trailing: CupertinoButton(
-        //   child: Icon(CupertinoIcons.add),
-        //   onPressed: () {},
-        //   padding: EdgeInsets.zero,
-        // ),
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 0.0),
@@ -123,10 +118,6 @@ class _ClipListPageState extends State<ClipListPage> {
             }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      // bottomNavigationBar: Container(
-      //   height: 100.0,
-      //   // color: Colors.white,
-      // ),
     );
   }
 
@@ -236,37 +227,16 @@ class _ClipListPageState extends State<ClipListPage> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Wrap(
-        children: <Widget>[
-          PopupMenuButton(
-            onSelected: (value) =>
-                _handleListTilePopUpButton(value, context, clip),
-            itemBuilder: (BuildContext context) {
-              return {'Edit', 'Delete'}.map((String choice) {
-                return PopupMenuItem(
-                  value: choice,
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          ),
-          // IconButton(
-          //   iconSize: 16.0,
-          //   alignment: Alignment.centerRight,
-          //   icon: Icon(Icons.edit),
-          //   onPressed: () {
-          //     _displayTextInputDialog(context, clip);
-          //   },
-          // ),
-          // IconButton(
-          //   iconSize: 16.0,
-          //   alignment: Alignment.centerRight,
-          //   icon: Icon(Icons.delete),
-          //   onPressed: () {
-          //     _displayDeleteConfirmDialog(context, clip);
-          //   },
-          // ),
-        ],
+      trailing: PopupMenuButton(
+        onSelected: (value) => _handleListTilePopUpButton(value, context, clip),
+        itemBuilder: (BuildContext context) {
+          return {'Edit', 'Delete'}.map((String choice) {
+            return PopupMenuItem(
+              value: choice,
+              child: Text(choice),
+            );
+          }).toList();
+        },
       ),
     );
   }
@@ -290,7 +260,6 @@ class _ClipListPageState extends State<ClipListPage> {
       _items.add(clip);
       _clipController.text = "";
       _addStringToSF(Clip.encode(_items));
-      // _loadClipsFromSF();
     });
   }
 
@@ -299,7 +268,6 @@ class _ClipListPageState extends State<ClipListPage> {
       clip.title = str;
       _clipController.text = "";
       _addStringToSF(Clip.encode(_items));
-      // _loadClipsFromSF();
     });
   }
 
@@ -307,7 +275,6 @@ class _ClipListPageState extends State<ClipListPage> {
     setState(() {
       _items.remove(clip);
       _addStringToSF(Clip.encode(_items));
-      // _loadClipsFromSF();
     });
   }
 
@@ -317,10 +284,6 @@ class _ClipListPageState extends State<ClipListPage> {
       _items = prefs.getString('clips') == null
           ? List<Clip>()
           : Clip.decode(prefs.getString('clips'));
-      // _items = (Clip.decode(prefs.getString('clips')));
-      // if (_items == null) {
-      //   _items = List<Clip>();
-      // }
       print('items 개수: ${_items.length}');
     });
   }
@@ -328,21 +291,5 @@ class _ClipListPageState extends State<ClipListPage> {
   void _addStringToSF(String encodedItems) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('clips', encodedItems);
-  }
-
-  double _getSmartBannerHeight() {
-    return 200.0;
-    // MediaQueryData mediaScreen = MediaQuery.of(context);
-    // double dpHeight = mediaScreen.orientation == Orientation.portrait
-    //     ? mediaScreen.size.height
-    //     : mediaScreen.size.width;
-    // print("Device height: $dpHeight");
-    // if (dpHeight <= 400.0) {
-    //   return 32.0;
-    // }
-    // if (dpHeight > 720.0) {
-    //   return 90.0;
-    // }
-    // return 50.0;
   }
 }
