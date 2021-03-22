@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-// import 'package:firebase_admob/firebase_admob.dart';
 import 'package:simple_clipboard/ad_manager.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
@@ -66,17 +65,13 @@ class _ClipListPageState extends State<ClipListPage> {
       ..show(anchorType: AnchorType.bottom);
   }
 
-  Future<void> _initAdMob() {
-    return FirebaseAdMob.instance.initialize(appId: AdManager.appId);
-  }
-
   @override
   void initState() {
-    super.initState();
     _loadClipsFromSF();
+    super.initState();
     _bannerAd = BannerAd(
       adUnitId: AdManager.bannerAdUnitId,
-      size: AdSize.banner,
+      size: AdSize.fullBanner,
     );
 
     _loadBannerAd();
@@ -94,24 +89,36 @@ class _ClipListPageState extends State<ClipListPage> {
     return Scaffold(
       appBar: CupertinoNavigationBar(
         middle: Text('Simple Clipboard'),
+        // trailing: CupertinoButton(
+        //   child: Icon(CupertinoIcons.add),
+        //   onPressed: () {},
+        //   padding: EdgeInsets.zero,
+        // ),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView(
-              children: ListTile.divideTiles(
-                context: context,
-                tiles: _items.map((clip) => _buildItemWidget(clip)).toList(),
-              ).toList(),
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 60.0),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: ListView(
+                children: ListTile.divideTiles(
+                  context: context,
+                  tiles: _items.map((clip) => _buildItemWidget(clip)).toList(),
+                ).toList(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            _displayTextInputDialog(context, null);
-          }),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80),
+        child: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              _displayTextInputDialog(context, null);
+            }),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -287,5 +294,21 @@ class _ClipListPageState extends State<ClipListPage> {
   void _addStringToSF(String encodedItems) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('clips', encodedItems);
+  }
+
+  double _getSmartBannerHeight() {
+    return 200.0;
+    // MediaQueryData mediaScreen = MediaQuery.of(context);
+    // double dpHeight = mediaScreen.orientation == Orientation.portrait
+    //     ? mediaScreen.size.height
+    //     : mediaScreen.size.width;
+    // print("Device height: $dpHeight");
+    // if (dpHeight <= 400.0) {
+    //   return 32.0;
+    // }
+    // if (dpHeight > 720.0) {
+    //   return 90.0;
+    // }
+    // return 50.0;
   }
 }
