@@ -91,7 +91,7 @@ class _ClipListPageState extends State<ClipListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CupertinoNavigationBar(
-        middle: Text('Simple Clipboard'),
+        middle: Text('Easy Clipboard'),
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 0.0),
@@ -244,11 +244,9 @@ class _ClipListPageState extends State<ClipListPage> {
       String value, BuildContext context, Clip clip) {
     switch (value) {
       case 'Edit':
-        print('Eidt!');
         _displayTextInputDialog(context, clip);
         break;
       case 'Delete':
-        print('Delete!');
         _displayDeleteConfirmDialog(context, clip);
         break;
     }
@@ -283,7 +281,6 @@ class _ClipListPageState extends State<ClipListPage> {
       _items = prefs.getString('clips') == null
           ? List<Clip>()
           : Clip.decode(prefs.getString('clips'));
-      print('items 개수: ${_items.length}');
     });
   }
 
