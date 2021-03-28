@@ -8,6 +8,9 @@ import 'dart:convert';
 import 'package:simple_clipboard/ad_manager.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
+//이 값은 변하면 안 된다
+const CLIP_KEY = 'clips';
+
 void main() {
   runApp(MyApp());
 }
@@ -39,6 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.pink,
@@ -70,8 +74,12 @@ class _ClipListPageState extends State<ClipListPage> {
 
   @override
   void initState() {
-    _loadClipsFromSF();
     super.initState();
+    _loadClipsFromSF();
+
+    // Initialize the AdMob SDK
+    FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+
     _bannerAd = BannerAd(
       adUnitId: AdManager.bannerAdUnitId,
       size: AdSize.fullBanner,
@@ -93,20 +101,14 @@ class _ClipListPageState extends State<ClipListPage> {
       appBar: CupertinoNavigationBar(
         middle: Text('Easy Clipboard'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 0.0),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView(
-                children: ListTile.divideTiles(
-                  context: context,
-                  tiles: _items.map((clip) => _buildItemWidget(clip)).toList(),
-                ).toList(),
-              ),
-            ),
-          ],
-        ),
+      body: ListView.separated(
+        itemCount: _items.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _buildItemWidget(_items[index]);
+        },
+        separatorBuilder: (context, index) {
+          return const Divider(height: 0);
+        },
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20.0),
@@ -147,7 +149,6 @@ class _ClipListPageState extends State<ClipListPage> {
               ),
               actions: <Widget>[
                 FlatButton(
-                  // color: Colors.red,
                   textColor: Colors.black,
                   child: Text('CANCEL'),
                   onPressed: () {
@@ -156,7 +157,6 @@ class _ClipListPageState extends State<ClipListPage> {
                   },
                 ),
                 FlatButton(
-                  // color: Colors.green,
                   textColor: Colors.black,
                   child: Text('OK'),
                   onPressed: () {
@@ -187,7 +187,6 @@ class _ClipListPageState extends State<ClipListPage> {
             content: Text('${clip.title}'),
             actions: <Widget>[
               FlatButton(
-                // color: Colors.red,
                 textColor: Colors.black,
                 child: Text('CANCEL'),
                 onPressed: () {
@@ -195,7 +194,6 @@ class _ClipListPageState extends State<ClipListPage> {
                 },
               ),
               FlatButton(
-                // color: Colors.green,
                 textColor: Colors.black,
                 child: Text('OK'),
                 onPressed: () {
@@ -278,14 +276,14 @@ class _ClipListPageState extends State<ClipListPage> {
   void _loadClipsFromSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _items = prefs.getString('clips') == null
+      _items = prefs.getString(CLIP_KEY) == null
           ? List<Clip>()
-          : Clip.decode(prefs.getString('clips'));
+          : Clip.decode(prefs.getString(CLIP_KEY));
     });
   }
 
   void _addStringToSF(String encodedItems) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('clips', encodedItems);
+    prefs.setString(CLIP_KEY, encodedItems);
   }
 }
