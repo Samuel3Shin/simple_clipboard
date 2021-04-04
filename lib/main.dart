@@ -43,7 +43,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.pink,
         ),
@@ -100,6 +99,12 @@ class _ClipListPageState extends State<ClipListPage> {
     return Scaffold(
       appBar: CupertinoNavigationBar(
         middle: Text('Easy Clipboard'),
+        trailing: IconButton(
+          onPressed: () {
+            showSearch(context: context, delegate: Search(this, _items));
+          },
+          icon: Icon(Icons.search),
+        ),
       ),
       body: ListView.separated(
         itemCount: _items.length,
@@ -285,5 +290,66 @@ class _ClipListPageState extends State<ClipListPage> {
   void _addStringToSF(String encodedItems) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(CLIP_KEY, encodedItems);
+  }
+}
+
+class Search extends SearchDelegate {
+  final _ClipListPageState _clipListPageState;
+  final List<Clip> listExample;
+  Search(this._clipListPageState, this.listExample);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return <Widget>[
+      IconButton(
+        icon: Icon(Icons.close),
+        onPressed: () {
+          query = "";
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  String selectedResult;
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Text(selectedResult),
+      ),
+    );
+  }
+
+  List<Clip> recentList = [];
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<Clip> suggestionList = [];
+    query.isEmpty
+        ? suggestionList = recentList
+        : suggestionList.addAll(listExample.where(
+            (element) => element.title.contains(query),
+          ));
+
+    return ListView.separated(
+      itemCount: suggestionList.length,
+      itemBuilder: (context, index) {
+        return _clipListPageState._buildItemWidget(suggestionList[index]);
+      },
+      separatorBuilder: (context, index) {
+        return const Divider(height: 0);
+      },
+    );
   }
 }
